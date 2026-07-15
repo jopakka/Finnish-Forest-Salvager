@@ -4,7 +4,7 @@ namespace Movement
 {
     public struct MovementCommand
     {
-        public Vector2 Move;
+        public Vector3 Move;
         public bool Jump;
     }
 }

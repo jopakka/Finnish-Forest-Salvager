@@ -41,11 +41,14 @@ namespace Movement
 
             _velocity.y += gravity * Time.deltaTime;
 
-            Vector3 move = new Vector3(command.Move.x, 0, command.Move.y);
-            move *= speed;
-            move += Vector3.up * _velocity.y;
+            Vector3 move = command.Move;
 
-            _controller.Move(move * Time.deltaTime);
+            _controller.Move(move * (speed * Time.deltaTime));
+
+            if (move.sqrMagnitude > 0.0001f)
+            {
+                transform.rotation = Quaternion.LookRotation(move.normalized);
+            }
         }
 
         private bool IsGrounded()

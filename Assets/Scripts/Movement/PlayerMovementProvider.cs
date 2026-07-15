@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,7 +6,24 @@ namespace Movement
 {
     public class PlayerMovementProvider : MonoBehaviour, IMovementProvider
     {
+        [SerializeField] private Transform camera;
+
         private MovementCommand _moveCommand;
+        private Vector2 _moveDirection;
+
+        private void Update()
+        {
+            Vector3 forward = camera.forward;
+            Vector3 right = camera.right;
+            
+            forward.y = 0;
+            right.y = 0;
+            
+            forward.Normalize();
+            right.Normalize();
+
+            _moveCommand.Move = forward * _moveDirection.y + right * _moveDirection.x;
+        }
 
         public MovementCommand GetMovementCommand()
         {
@@ -19,13 +37,12 @@ namespace Movement
 
         public void OnMove(InputAction.CallbackContext ctx)
         {
-            _moveCommand.Move = ctx.ReadValue<Vector2>();
+            _moveDirection = ctx.ReadValue<Vector2>();
         }
 
         public void OnJump(InputAction.CallbackContext ctx)
         {
             if (!ctx.performed) return;
-            Debug.Log("Jump requested");
             _moveCommand.Jump = true;
         }
     }
