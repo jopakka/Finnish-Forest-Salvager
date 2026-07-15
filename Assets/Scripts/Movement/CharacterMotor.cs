@@ -15,6 +15,8 @@ namespace Movement
         private CharacterController _controller;
         private IMovementProvider _movementProvider;
         private Vector3 _velocity;
+        private float _groundDistance = float.PositiveInfinity;
+        private float _groundCheckOffset = 0.1f;
 
         private void Awake()
         {
@@ -26,13 +28,17 @@ namespace Movement
         {
             MovementCommand command = _movementProvider.GetMovementCommand();
 
-            if (IsGrounded())
+            RaycastHit? groundHit = GroundHit();
+            float distance = groundHit?.distance ?? float.PositiveInfinity;
+            _groundDistance = distance;
+            
+            if (!float.IsInfinity(distance))
             {
-                if (_velocity.y < 0)
+                if (distance < _groundCheckOffset + 0.01f)
                 {
-                    _velocity.y = -0f;
+                    _velocity.y = 0f;
                 }
-
+                
                 if (command.Jump)
                 {
                     _velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
@@ -41,34 +47,48 @@ namespace Movement
 
             _velocity.y += gravity * Time.deltaTime;
 
-            Vector3 move = command.Move;
+            Vector3 move = command.Move * speed;
+            move.y = _velocity.y;
 
-            _controller.Move(move * (speed * Time.deltaTime));
+            _controller.Move(move * Time.deltaTime);
+
+            move.y = 0f;
 
             if (move.sqrMagnitude > 0.0001f)
             {
-                transform.rotation = Quaternion.LookRotation(move.normalized);
+                transform.rotation = Quaternion.LookRotation(move);
             }
         }
 
-        private bool IsGrounded()
+        private RaycastHit? GroundHit()
         {
-            return Physics.CheckSphere(
-                groundCheck.position,
-                groundRadius,
-                groundMask,
-                QueryTriggerInteraction.Ignore
-            );
-        }
+            RaycastHit hit;
+
+            if (
+                Physics.SphereCast(
+                    groundCheck.position + Vector3.up * (groundRadius + _groundCheckOffset),
+                    groundRadius,
+                    Vector3.down,
+                    out hit,
+                    0.2f + _groundCheckOffset + groundRadius,
+                    groundMask
+                )
+            )
+            {
+                return hit;
+            }
         
+            return null;
+        }
+
         private void OnDrawGizmosSelected()
         {
+            if (float.IsInfinity(_groundDistance)) return;
             Gizmos.color = Color.green;
-
-            if (groundCheck != null)
-            {
-                Gizmos.DrawWireSphere(groundCheck.position, groundRadius);
-            }
+            
+            Vector3 position = groundCheck.position + Vector3.up * (groundRadius - _groundDistance);
+            Gizmos.DrawWireSphere(position, groundRadius);
+            Gizmos.DrawLine(groundCheck.position, position);
         }
     }
 }
