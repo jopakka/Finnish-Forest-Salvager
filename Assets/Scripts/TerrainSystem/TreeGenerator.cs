@@ -71,17 +71,15 @@ namespace TerrainSystem
 
         private void HandleTrees()
         {
-            int playerChunkX = Mathf.FloorToInt(player.position.x / chunkSize);
-            int playerChunkZ = Mathf.FloorToInt(player.position.z / chunkSize);
-            Chunk playerChunk = new Chunk(playerChunkX, playerChunkZ);
-            if (playerChunk.Equals(_playerChunk)) return;
-            _playerChunk = playerChunk;
+            Chunk currentPlayerChunk = Chunk.FromPoint(player.position, chunkSize);
+            if (currentPlayerChunk.Equals(_playerChunk)) return;
+            _playerChunk = currentPlayerChunk;
 
             Vector2 spawn2D = new Vector2(spawnPoint.x, spawnPoint.z);
             float safeRadiusSquared = spawnSafeRadius * spawnSafeRadius;
 
-            SpawnTrees(playerChunkX, playerChunkZ, safeRadiusSquared, spawn2D);
-            RemoveTreesTooFar(playerChunkX, playerChunkZ);
+            SpawnTrees(_playerChunk.X, _playerChunk.Z, safeRadiusSquared, spawn2D);
+            RemoveTreesTooFar(_playerChunk.X, _playerChunk.Z);
         }
 
         private void SpawnTrees(
@@ -167,15 +165,28 @@ namespace TerrainSystem
         
         private struct Chunk : IEquatable<Chunk>
         {
-            private int _x;
-            private int _z;
+            public readonly int X;
+            public readonly int Z;
             private bool _isEmpty;
             
             public Chunk(int x, int z)
             {
-                _x = x;
-                _z = z;
+                X = x;
+                Z = z;
                 _isEmpty = false;
+            }
+
+            public static Chunk FromPoint(Vector3 point, int chunkSize)
+            {
+                Vector2 point2D = new Vector2(point.x, point.z);
+                return FromPoint(point2D, chunkSize);
+            }
+
+            public static Chunk FromPoint(Vector2 point, int chunkSize)
+            {
+                int playerChunkX = Mathf.FloorToInt(point.x / chunkSize);
+                int playerChunkZ = Mathf.FloorToInt(point.y / chunkSize);
+                return new Chunk(playerChunkX, playerChunkZ);
             }
             
             public static readonly Chunk Empty = new()
@@ -185,7 +196,7 @@ namespace TerrainSystem
 
             public override string ToString()
             {
-                return $"Chunk(x={_x}, z={_z}, isEmpty={_isEmpty})";
+                return $"Chunk(x={X}, z={Z}, isEmpty={_isEmpty})";
             }
 
             public override bool Equals(object obj)
@@ -201,12 +212,12 @@ namespace TerrainSystem
 
             public override int GetHashCode()
             {
-                return HashCode.Combine(_x, _z, _isEmpty);
+                return HashCode.Combine(X, Z, _isEmpty);
             }
 
             public bool Equals(Chunk other)
             {
-                return _isEmpty == other._isEmpty && _x == other._x && _z == other._z;
+                return _isEmpty == other._isEmpty && X == other.X && Z == other.Z;
             }
         }
     }
