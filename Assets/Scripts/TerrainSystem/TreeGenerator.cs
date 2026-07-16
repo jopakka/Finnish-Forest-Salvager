@@ -29,7 +29,8 @@ namespace TerrainSystem
                     regionSize: new Vector2(
                         terrainData.size.x,
                         terrainData.size.z
-                    )
+                    ),
+                    seed: seed
                 );
             
             Debug.Log($"terrainData.size: {terrainData.size}");
