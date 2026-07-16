@@ -683,6 +683,9 @@ MonoBehaviour:
   spawnSafeRadius: 20
   spawnPoint: {x: 0, y: 0, z: 0}
   treePrefab: {fileID: 826800843800422679, guid: a53cd1745ca9bce4eac0efc7327cfa68, type: 3}
+  player: {fileID: 10632949}
+  chunkSize: 50
+  chunkSpawnRadius: 1
 --- !u!1001 &2128182460881761123
 PrefabInstance:
   m_ObjectHideFlags: 0
