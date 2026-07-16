@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4497745121362872119}
   - component: {fileID: 1841906356135949309}
   - component: {fileID: 6664961602540622988}
+  - component: {fileID: 826800843800422679}
   m_Layer: 0
   m_Name: Spruce
   m_TagString: Untagged
@@ -115,3 +116,15 @@ CapsuleCollider:
   m_Height: 8.99
   m_Direction: 1
   m_Center: {x: 0, y: 3.41, z: 0}
+--- !u!114 &826800843800422679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 184428104472318504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1ec7b6b6b8b4d56923d061f48e7de62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainSystem.Tree

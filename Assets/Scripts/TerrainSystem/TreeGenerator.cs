@@ -1,66 +1,77 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Utils;
-using Random = UnityEngine.Random;
 
 namespace TerrainSystem
 {
     public class TreeGenerator : MonoBehaviour
     {
-        [SerializeField] private int treeCount = 500;
         [SerializeField] private string seed = "hello world";
         [SerializeField] private float spawnSafeRadius = 20f;
         [SerializeField] private Vector3 spawnPoint;
+        [SerializeField] private Tree treePrefab;
 
         private Terrain _terrain;
+        private List<Vector2> _treePoints;
+        private Transform _treeContainer;
 
         private void Start()
         {
             _terrain = GetComponent<Terrain>();
 
-            List<TreeInstance> treeInstances = new List<TreeInstance>();
+            GenerateTreeContainer();
+            GeneratePoints();
+            SpawnTrees();
+        }
+
+        private void GenerateTreeContainer()
+        {
+            if (_treeContainer != null)
+            {
+                Destroy(_treeContainer);
+            }
+            GameObject treeContainer = new GameObject("TreeContainer");
+            treeContainer.transform.SetParent(transform);
+            _treeContainer = treeContainer.transform;
+        }
+        
+        private void GeneratePoints()
+        {
             TerrainData terrainData = _terrain.terrainData;
+
+            _treePoints = PoissonDiskSampling.GeneratePoints(
+                radius: 6f,
+                regionSize: new Vector2(
+                    terrainData.size.x,
+                    terrainData.size.z
+                ),
+                seed: seed
+            );
+        }
+
+        private void SpawnTrees()
+        {
             Vector2 spawn2D = new Vector2(spawnPoint.x, spawnPoint.z);
 
-            List<Vector2> points =
-                PoissonDiskSampling.GeneratePoints(
-                    radius: 6f,
-                    regionSize: new Vector2(
-                        terrainData.size.x,
-                        terrainData.size.z
-                    ),
-                    seed: seed
-                );
-            
-            Debug.Log($"terrainData.size: {terrainData.size}");
+            float safeRadiusSquared = spawnSafeRadius * spawnSafeRadius;
 
-            foreach (Vector2 p in points)
+            foreach (Vector2 p in _treePoints)
             {
-                Vector2 worldP = new Vector2(p.x + transform.position.x, p.y + transform.position.z);
-                
-                if (Vector2.Distance(worldP, spawn2D) <= spawnSafeRadius) continue;
-                
-                float nx = p.x / terrainData.size.x;
-                float nz = p.y / terrainData.size.z;
+                float wx = p.x + transform.position.x;
+                float wz = p.y + transform.position.z;
+                Vector2 diff = new Vector2(wx, wz) - spawn2D;
 
-                TreeInstance treeInstance = new TreeInstance
-                {
-                    position = new Vector3(
-                        nx,
-                        terrainData.GetInterpolatedHeight(nx, nz) / terrainData.size.y,
-                        nz),
-                    prototypeIndex = Random.Range(0, terrainData.treePrototypes.Length),
-                    widthScale = Random.Range(0.8f, 1.2f),
-                    heightScale = Random.Range(0.8f, 1.2f),
-                    color = Color.white,
-                    lightmapColor = Color.white,
-                };
+                if (diff.sqrMagnitude <= safeRadiusSquared) continue;
+                
+                float y = _terrain.SampleHeight(new Vector3(wx, 0, wz));
 
-                treeInstances.Add(treeInstance);
+                Instantiate(
+                    treePrefab,
+                    new Vector3(wx, y, wz),
+                    Quaternion.Euler(0, Random.Range(0, 360), 0),
+                    _treeContainer
+                );
             }
-
-            terrainData.treeInstances = treeInstances.ToArray();
         }
     }
 }

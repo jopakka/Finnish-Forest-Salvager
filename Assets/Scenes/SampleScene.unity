@@ -679,10 +679,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da87b78a868c4216bc70ecdf1cb366a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TerrainSystem.TreeGenerator
-  treeCount: 10000
   seed: hello world
   spawnSafeRadius: 20
   spawnPoint: {x: 0, y: 0, z: 0}
+  treePrefab: {fileID: 826800843800422679, guid: a53cd1745ca9bce4eac0efc7327cfa68, type: 3}
 --- !u!1001 &2128182460881761123
 PrefabInstance:
   m_ObjectHideFlags: 0
