@@ -591,6 +591,21 @@ MonoBehaviour:
   flatRadius: 40
   blendRadius: 80
   spawnHeight: 0.02
+  onTerrainGenerated:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1602435066}
+        m_TargetAssemblyTypeName: TerrainSystem.TreeGenerator, Assembly-CSharp
+        m_MethodName: OnTerrainGenerated
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!154 &1602435063
 TerrainCollider:
   m_ObjectHideFlags: 0

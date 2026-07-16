@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;
 
 namespace TerrainSystem
 {
@@ -19,6 +20,8 @@ namespace TerrainSystem
         [SerializeField] private float flatRadius = 40f; // Completely flat
         [SerializeField] private float blendRadius = 70f; // Smooth transition
         [SerializeField] private float spawnHeight = 0.02f;
+
+        public UnityEvent<Terrain> onTerrainGenerated;
 
         private Terrain _terrain;
 
@@ -65,6 +68,7 @@ namespace TerrainSystem
             }
 
             _terrain.terrainData.SetHeights(0, 0, heights);
+            onTerrainGenerated.Invoke(_terrain);
         }
 
         private float GenerateHeight(float x, float z, float offsetX, float offsetZ, float center)

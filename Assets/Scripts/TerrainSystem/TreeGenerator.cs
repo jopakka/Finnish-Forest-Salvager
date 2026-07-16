@@ -24,10 +24,9 @@ namespace TerrainSystem
         private const float TreeGenerateTick = 0.1f;
         private Chunk _playerChunk = Chunk.Empty;
 
-        private void Start()
+        public void OnTerrainGenerated(Terrain  terrain)
         {
-            _terrain = GetComponent<Terrain>();
-
+            _terrain = terrain;
             GenerateTreeContainer();
             GeneratePoints();
             HandleTrees();
