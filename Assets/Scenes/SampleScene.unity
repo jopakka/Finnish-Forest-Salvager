@@ -560,6 +560,7 @@ GameObject:
   - component: {fileID: 1602435064}
   - component: {fileID: 1602435063}
   - component: {fileID: 1602435062}
+  - component: {fileID: 1602435066}
   m_Layer: 0
   m_Name: Terrain
   m_TagString: Untagged
@@ -588,7 +589,7 @@ MonoBehaviour:
   hillWeight: 0.2
   detailWeight: 0.05
   flatRadius: 40
-  blendRadius: 70
+  blendRadius: 80
   spawnHeight: 0.02
 --- !u!154 &1602435063
 TerrainCollider:
@@ -660,12 +661,28 @@ Transform:
   m_GameObject: {fileID: 1602435061}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -50, y: 0, z: -50}
+  m_LocalPosition: {x: -300, y: 0, z: -300}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1602435066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1602435061}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da87b78a868c4216bc70ecdf1cb366a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainSystem.TreeGenerator
+  treeCount: 10000
+  seed: hello world
+  spawnSafeRadius: 20
+  spawnPoint: {x: 0, y: 0, z: 0}
 --- !u!1001 &2128182460881761123
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -692,7 +709,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3843876905562949005, guid: 7a13c9abdae0121458af261828f3f184, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.305
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3843876905562949005, guid: 7a13c9abdae0121458af261828f3f184, type: 3}
       propertyPath: m_LocalPosition.z
