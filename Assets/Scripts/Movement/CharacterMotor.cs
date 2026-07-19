@@ -33,8 +33,7 @@ namespace Movement
                 Vector3 attackPoint = actionCommand.AttackPoint;
                 attackPoint.y = 0f;
                 Vector3 start = transform.position + new Vector3(0f, 2f, 0f);
-                Vector3 dir = transform.position + attackPoint;
-                dir.Normalize();
+                Vector3 dir = (attackPoint - transform.position).normalized;
                 Debug.DrawRay(start, dir, Color.red);
             }
 
