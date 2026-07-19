@@ -1,5 +1,7 @@
-﻿using Action;
+﻿using System;
+using Action;
 using UnityEngine;
+using Weapons;
 
 namespace Movement
 {
@@ -7,6 +9,8 @@ namespace Movement
     public class CharacterMotor : MonoBehaviour
     {
         [SerializeField] private float speed = 5;
+        [SerializeField] private Transform toolTarget;
+        [SerializeField] private WeaponInventory weapons;
         
         private static readonly int AnimatorParamSpeed = Animator.StringToHash("speed");
 
@@ -16,6 +20,7 @@ namespace Movement
         private Animator _animator;
         private Vector3 _velocity;
         private Vector3 _prevPosition;
+        private Weapon _equippedWeapon;
 
         private void Awake()
         {
@@ -23,6 +28,14 @@ namespace Movement
             _movementProvider = GetComponent<IMovementProvider>();
             _actionProvider = GetComponent<IActionProvider>();
             _animator = GetComponent<Animator>();
+        }
+
+        private void Start()
+        {
+            _equippedWeapon = Instantiate(
+                weapons.Inventory.GetItem(0),
+                toolTarget
+            );
         }
 
         private void Update()
@@ -35,6 +48,7 @@ namespace Movement
                 Vector3 start = transform.position + new Vector3(0f, 2f, 0f);
                 Vector3 dir = (attackPoint - transform.position).normalized;
                 Debug.DrawRay(start, dir, Color.red);
+                _equippedWeapon?.Attack();
             }
 
             MovementCommand command = _movementProvider.GetMovementCommand();
