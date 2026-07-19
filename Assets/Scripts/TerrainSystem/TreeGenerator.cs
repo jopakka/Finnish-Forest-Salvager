@@ -16,19 +16,17 @@ namespace TerrainSystem
         [SerializeField] private Transform player;
         [SerializeField] private int chunkSize = 50;
         [SerializeField] private int chunkSpawnRadius = 1;
+        [SerializeField] private Camera camera;
 
-        private Terrain _terrain;
-        private List<Vector2> _treePoints;
+        private readonly Dictionary<Chunk, List<Vector2>> _chunkPoints = new();
         private Transform _treeContainer;
         private readonly Dictionary<string, Tree> _trees = new();
         private const float TreeGenerateTick = 0.1f;
         private Chunk _playerChunk = Chunk.Empty;
 
-        public void OnTerrainGenerated(Terrain  terrain)
+        public void Start()
         {
-            _terrain = terrain;
             GenerateTreeContainer();
-            GeneratePoints();
             HandleTrees();
             StartCoroutine(RegenerateTrees());
         }
@@ -43,20 +41,6 @@ namespace TerrainSystem
             GameObject treeContainer = new GameObject("TreeContainer");
             treeContainer.transform.SetParent(transform);
             _treeContainer = treeContainer.transform;
-        }
-
-        private void GeneratePoints()
-        {
-            TerrainData terrainData = _terrain.terrainData;
-
-            _treePoints = PoissonDiskSampling.GeneratePoints(
-                radius: 6f,
-                regionSize: new Vector2(
-                    terrainData.size.x,
-                    terrainData.size.z
-                ),
-                seed: seed
-            );
         }
 
         private IEnumerator RegenerateTrees()
@@ -88,9 +72,27 @@ namespace TerrainSystem
             Vector2 spawn2D
         )
         {
-            foreach (Vector2 p in _treePoints)
+            for (int chunkX = playerChunkX - chunkSpawnRadius;
+                 chunkX <= playerChunkX + chunkSpawnRadius;
+                 chunkX++)
             {
-                SpawnTree(p, playerChunkX, playerChunkZ, safeRadiusSquared, spawn2D);
+                for (int chunkZ = playerChunkZ - chunkSpawnRadius;
+                     chunkZ <= playerChunkZ + chunkSpawnRadius;
+                     chunkZ++)
+                {
+                    List<Vector2> points = GetPointsForChunk(new Chunk(chunkX, chunkZ));
+
+                    foreach (Vector2 localPoint in points)
+                    {
+                        SpawnTree(
+                            localPoint,
+                            chunkX,
+                            chunkZ,
+                            safeRadiusSquared,
+                            spawn2D
+                        );
+                    }
+                }
             }
         }
 
@@ -105,8 +107,8 @@ namespace TerrainSystem
             string id = $"{treePoint.x}_{treePoint.y}";
             if (_trees.ContainsKey(id)) return;
 
-            float wx = treePoint.x + transform.position.x;
-            float wz = treePoint.y + transform.position.z;
+            float wx = playerChunkX * chunkSize + treePoint.x;
+            float wz = playerChunkZ * chunkSize + treePoint.y;
 
             // Spawn trees on chunk where player is
             int treeChunkX = Mathf.FloorToInt(wx / chunkSize);
@@ -122,14 +124,14 @@ namespace TerrainSystem
             Vector2 diff = new Vector2(wx, wz) - spawn2D;
             if (diff.sqrMagnitude <= safeRadiusSquared) return;
 
-            float y = _terrain.SampleHeight(new Vector3(wx, 0, wz));
-
             Tree tree = Instantiate(
                 treePrefab,
-                new Vector3(wx, y, wz),
+                new Vector3(wx, 0f, wz),
                 Quaternion.Euler(0, Random.Range(0, 360), 0),
                 _treeContainer
             );
+
+            tree.Initialize(player, camera);
 
             _trees.Add(id, tree);
         }
@@ -162,12 +164,27 @@ namespace TerrainSystem
             }
         }
         
+        private List<Vector2> GetPointsForChunk(Chunk chunk)
+        {
+            if (_chunkPoints.TryGetValue(chunk, out var points))
+                return points;
+
+            points = PoissonDiskSampling.GeneratePoints(
+                radius: 6f,
+                regionSize: new Vector2(chunkSize, chunkSize),
+                seed: $"{seed}_{chunk.X}_{chunk.Z}"
+            );
+
+            _chunkPoints.Add(chunk, points);
+            return points;
+        }
+
         private struct Chunk : IEquatable<Chunk>
         {
             public readonly int X;
             public readonly int Z;
             private bool _isEmpty;
-            
+
             public Chunk(int x, int z)
             {
                 X = x;
@@ -187,7 +204,7 @@ namespace TerrainSystem
                 int playerChunkZ = Mathf.FloorToInt(point.y / chunkSize);
                 return new Chunk(playerChunkX, playerChunkZ);
             }
-            
+
             public static readonly Chunk Empty = new()
             {
                 _isEmpty = true,
@@ -204,7 +221,7 @@ namespace TerrainSystem
                 {
                     return false;
                 }
-                
+
                 Chunk other = (Chunk)obj;
                 return Equals(other);
             }

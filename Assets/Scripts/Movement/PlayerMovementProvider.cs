@@ -28,22 +28,12 @@ namespace Movement
         public MovementCommand GetMovementCommand()
         {
             MovementCommand result = _moveCommand;
-            
-            // One-shot actions are consumed
-            _moveCommand.Jump = false;
-            
             return result;
         }
 
         public void OnMove(InputAction.CallbackContext ctx)
         {
             _moveDirection = ctx.ReadValue<Vector2>();
-        }
-
-        public void OnJump(InputAction.CallbackContext ctx)
-        {
-            if (!ctx.performed) return;
-            _moveCommand.Jump = true;
         }
     }
 }
