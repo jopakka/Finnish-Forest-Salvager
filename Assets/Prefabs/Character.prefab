@@ -414,6 +414,7 @@ GameObject:
   - component: {fileID: 8065725842041591818}
   - component: {fileID: 4095230558000412346}
   - component: {fileID: 5529076494369313168}
+  - component: {fileID: 9060321736250094317}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -540,7 +541,19 @@ MonoBehaviour:
     m_ActionId: 641cd816-40e6-41b4-8c3d-04687c349290
     m_ActionName: 'Player/Sprint[/Keyboard/leftShift]'
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 9060321736250094317}
+        m_TargetAssemblyTypeName: Action.PlayerActionProvider, Assembly-CSharp
+        m_MethodName: OnAttack
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 647bd9fc-5984-4fe9-8898-3fedd0ceb8b0
     m_ActionName: 'Player/Attack[/Mouse/leftButton]'
   m_NeverAutoSwitchControlSchemes: 0
@@ -574,6 +587,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Movement.PlayerMovementProvider
   camera: {fileID: 0}
+--- !u!114 &9060321736250094317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3401962755271603375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3dd38ef22c6446508ad0a62581f903c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Action.PlayerActionProvider
+  camera: {fileID: 0}
+  mouseRayLayerMask:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &4397044175036893948
 GameObject:
   m_ObjectHideFlags: 0
